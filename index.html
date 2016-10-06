@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style> /* set the CSS */
+
+body { font: 12px Arial;
+        float:left;
+}
+
+path {
+    stroke-width: 2;
+    fill: none;
+}
+
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 2;
+    shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+
+<!-- load the d3.js library -->    
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+// Set the dimensions of the canvas / graph
+var margin = {top: 30, right: 150, bottom: 30, left: 50},
+    width = 1500 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+
+// Parse the date / time
+var parseDate = d3.time.format("%B-%Y").parse;
+
+var mindate = parseDate("January-2000");
+var maxdate = parseDate("January-2016");
+
+// Set the ranges
+var x = d3.time.scale().range([0, width]);
+var y = d3.scale.linear().range([height, 0]);
+
+// Define the axes
+var xAxis = d3.svg.axis().scale(x)
+    .orient("bottom").ticks(6);
+
+var yAxis = d3.svg.axis().scale(y)
+    .orient("left").ticks(6);
+
+// Define the line
+var valueline = d3.svg.line()
+        .interpolate("basis")
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.unemployment); });
+
+// Adds the svg canvas
+var svg = d3.select("body")
+    .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+var color = d3.scale.category20();
+var color2 = d3.scale.category20b();
+
+var dataAll = {};
+var dataArray = [];
+//Push data
+
+d3.csv("unemployment.csv", function(error, data) {
+  data.forEach(function(d) {
+      if (dataAll[d.State]==undefined)
+        dataAll[d.State] = [];
+      dataAll[d.State].push(d);
+  });
+
+  for (var statename in dataAll) {
+      dataAll[statename].forEach(function (d) {
+          d.date = parseDate(d.Month + "-" + d.Year);
+          d.unemployment = +d["Unemployment rates by State, not seasonally adjusted"];
+      });
+
+      dataAll[statename].sort(function (a, b) {
+          if (a.date < b.date)
+              return -1;
+          else if (a.date > b.date)
+              return 1;
+          else
+              return 0;
+      })
+  }
+
+    // Scale the range of the data
+    x.domain(d3.extent(dataAll["Mississippi"], function(d) {
+        //console.log(d.date);
+        return d.date; }));
+    x.domain([mindate,maxdate])
+    //y.domain([d3.min(dataAll["Mississippi"], function(d) { return d.unemployment; })-.5, d3.max(dataAll["Mississippi"], function(d) { return d.unemployment; })+.5]);
+    y.domain([0,15]);
+
+    svg.selectAll(".line")
+            .data(dataArray)
+            .enter()
+            .append("path")
+            .attr("class", "line")
+            .attr("stroke-opacity", 1)
+            .attr("stroke-width", 2)
+            .attr("stroke", function(d){
+                console.log(d[0].State)
+                    return color(d[0].State);
+            })
+            .attr("d", function(d){
+                return valueline(d);
+            })
+            .on("mouseover", function(d1){
+                svg.selectAll(".line")
+                        .attr("stroke-opacity", function(d2){
+                            if(d1==d2)
+                                return 1;
+                            else
+                                return 0.15;
+                        })
+                        .attr("stroke-width", function(d3){
+                            if(d1==d3)
+                                return 4;
+                            else
+                                return 2;
+                        });
+            })
+            .on("mouseout", function(d){
+                svg.selectAll(".line")
+                        .attr("stroke-opacity", 1)
+            });
+
+    svg.selectAll(".line").append("title")
+            .text( function(d){
+                return d[0].State;
+            });
+
+    //Add the X Axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    // Add the Y Axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+
+
+    svg.append("text")
+            .attr("x", (width/2))
+            .attr("y", 0 - (margin.top)/2)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "20px")
+            .attr("text-decoration", "underline")
+            .text("Time Series: Unemployment Rate")
+
+    svg.append("text")
+            .attr("x", width/2)
+            .attr("y", height + margin.bottom)
+            .style("text-anchor", "middle")
+            .text("Date");
+
+    svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0-margin.left+10)
+            .attr("x", 0-(height/2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Percent Unemployed");
+});
+
+function update(inState){
+    dataArray.push(dataAll[inState]);//Move this below the forEach function in order to trim the data being passed into the array. the data points of inState should be checked if
+                                    //they are inbetween minDate and maxDate. This will eleminate overflowing lines
+    dataAll[inState];
+    var thisData = dataAll[inState];
+    var i = 0;
+    //debugger;
+
+    dataAll[inState].forEach(function(d) {
+        if(d.date <= maxdate) {
+            console.log("Passed " + d.State + " " + d.date)
+            i++;
+        }
+    })
+    console.log(i);
+
+    var xLoc = thisData[i-1].date;
+    var yLoc = thisData[i-1].unemployment;
+    svg.selectAll(".line")
+            .data(dataArray)
+            .enter()
+            .append("path")
+            .attr("class", "line")
+            .attr("stroke-opacity", 1)
+            .attr("stroke", function(d){
+                console.log(d[0].State)
+                return color(d[0].State);
+            })
+            .attr("d", function(d){
+                return valueline(d);
+            })
+            .on("mouseover", function(d1){
+                svg.selectAll(".line")
+                        .attr("stroke-opacity", function(d2){
+                            if(d1==d2)
+                                return 1;
+                            else
+                                return 0.15;
+                        })
+                        svg.selectAll(".line")
+                                .attr("font-size", "20px")
+                                .attr("fill", "#00f")
+                        .style("stroke-width", function(d3){
+                            if(d1==d3)
+                                return 4;
+                            else
+                                return 2;
+                        });
+            })
+            .on("mouseout", function(d){
+                svg.selectAll(".line")
+                        .attr("stroke-opacity", 1)
+                        .style("stroke-width", 2)
+            });
+
+    svg.append("text")
+            .attr("transform", "translate(" + (x(xLoc)+3) + "," + y(yLoc) + ")")
+            .attr("dy", ".35em")
+            .attr("text-anchor","start")
+            .style("fill", function(d){
+                return color(inState);
+            })
+            .text(inState)
+
+    svg.selectAll(".line").append("title")
+            .text( function(d){
+                return d[0].State;
+            });
+}
+
+function changeState(){
+    var selState = document.getElementById("selState");
+    var state1 = selState.value;
+    //console.log(selectedStates[0].value);
+    update(state1);
+
+}
+
+/*
+function removeAll(){
+    selectedStates.pop("Texas");
+    dataArray.pop(dataAll["Texas"])
+    exit("Texas");
+    //console.log(selectedStates);
+}*/
+
+</script>
+<br>
+<select id = "selState" onchange="changeState()">
+    <option value = "null">Select a State</option>
+    <option value = "New York">New York</option>
+    <option value = "Texas">Texas</option>
+    <option value = "New Mexico">New Mexico</option>
+    <option value = "Arizona">Arizona</option>
+    <option value = "Alabama">Alabama</option>
+    <option value = "Arkansas">Arkansas</option>
+    <option value = "Connecticut">Connecticut</option>
+
+
+</select>
+
+<!--<button id="btn" onclick="removeAll()">click to delete all</button>-->
+
+<p>
+    <label><input type="checkbox" id="myCheck">Include national unemployment rate</label>
+</p>
+
+</body>
