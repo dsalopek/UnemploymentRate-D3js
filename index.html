@@ -71,7 +71,7 @@ var dataAll = {};
 var dataArray = [];
 //Push data
 
-d3.csv("unemployment.csv", function(error, data) {
+d3.csv("Time-Series/unemployment.csv", function(error, data) {
   data.forEach(function(d) {
       if (dataAll[d.State]==undefined)
         dataAll[d.State] = [];
