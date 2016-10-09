@@ -15,16 +15,35 @@
         clip-path: url(#clip);
     }
 
+    div.tooltip {
+        position: absolute;
+        text-align: center;
+        padding: 5px;
+        font: 12px sans-serif;
+        background: black;
+        color: white;
+        border: 1px;
+        border-radius: 4px;
+        pointer-events: none;
+    }
+
+    button{
+        position: relative;
+        left: 310px;
+    }
+
+
 </style>
 
-<div id="body"></div>
-<div id="svg"></div>
-
 <svg width="960" height="500"></svg>
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script><br>
 
 <script>
 
+    /*************************************************/
+    /*                 Chart Section                 */
+    /*************************************************/
+    
     var svgChart = d3.select("svg")
     margin = {top: 20, right: 20, bottom: 110, left: 40},
             margin2 = {top: 430, right: 20, bottom: 30, left: 40},
@@ -46,12 +65,6 @@
     var brush = d3.brushX()
             .extent([[0, 0], [width, height2-1]])
             .on("brush end", brushed);
-
-    /*var zoom = d3.zoom()
-            .scaleExtent([1, Infinity])
-            .translateExtent([[0, 0], [width, height]])
-            .extent([[0, 0], [width, height]])
-            .on("zoom", zoomed);*/
 
     var valueLine = d3.line()
             .curve(d3.curveBasis)
@@ -77,12 +90,12 @@
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
+    var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
     dataAll = {};
     dataArray = [];
-
-    /*************************************************/
-    /*                 Chart Section                 */
-    /*************************************************/
 
     d3.csv("unemployment.csv", function(error, data) {
         if (error) throw error;
@@ -117,7 +130,8 @@
         focus.selectAll(".line").remove();
         context.selectAll(".line").remove();
 
-        drawGraph();
+        addNational();
+
     });
 
     function drawGraph() {
@@ -126,10 +140,14 @@
                 .attr("class", "line")
                 .attr("stroke", function(d){
                     if(d[0].State=="National"){
-                        console.log(d[0].State + "test");
                         return "black";
                     }
-                    return selColor;
+                    return getColor(d[0].State);
+                })
+                .style("stroke-dasharray", function(d){
+                    if(d[0].State=="National"){
+                        return 5;
+                    }
                 })
                 .attr("d", function(d){
                     return valueLine2(d);
@@ -139,10 +157,9 @@
                 .attr("class", "line")
                 .attr("stroke", function(d){
                     if(d[0].State=="National"){
-                        console.log(d[0].State + "test");
                         return "black";
                     }
-                    return selColor;
+                    return getColor(d[0].State);
                 })
                 .attr("d", function(d){
                     return valueLine(d);
@@ -174,84 +191,34 @@
                     svgMap.selectAll("path")
                             .style("fill-opacity", function(d2){
                                 if(d1[0].State==d2.properties.name) {
-                                    console.log("pass");
                                     return "1";
                                 }
                                 else {
-                                    console.log("fail");
                                     return "0";
                                 }
                             })
-                            .style("stroke", function(d2){
+                            .style("stroke-dasharray", function(d2){
                                 if(d1[0].State=="National")
-                                    return "red";
-                                else
-                                    return "black";
+                                    return "5";
                             });
+                    div.transition()
+                            .style("opacity", 1.0);
+                    div.html("<span>" + d1[0].State + "</span>")
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 28) + "px")
+                            .style("top", (d3.event.pageY-28) + "px")
                 })
                 .on("mouseout", function(d1){
                     focus.selectAll(".line")
                             .style("stroke-opacity","1")
                             .style("stroke-width",1.5)
+                    div.transition()
+                            .style("opacity", 0)
                     svgMap.selectAll("path")
                             .style("fill-opacity", "1")
                             .style("stroke","black")
+                            .style("stroke-dasharray","0")
                 })
-
-        /*focus.append("path")
-                .data(dataArray)
-                .attr("class", "line")
-                .attr("stroke", function(d){
-                    if(d.State=="National"){
-                        console.log(d.State + "test");
-                        return "black";
-                    }
-                    console.log(d.State + "test fail");
-                    return selColor;
-                })
-                .attr("d", function(d){
-                    return valueLine(d);
-                })
-                .on("mouseover", function(d1){
-                    focus.selectAll(".line")
-                            .style("stroke-opacity", function(d2){
-                                if(d1==d2)
-                                    return 1;
-                                else
-                                    return 0.15;
-                            })
-                            .style("stroke-width", function(d3){
-                                if(d1==d3)
-                                    return 3;
-                                else
-                                    return 1.5;
-                            });
-                    svgMap.selectAll("path")
-                            .style("fill-opacity", function(d2){
-                                if(d1[0].State==d2.properties.name) {
-                                    console.log("pass");
-                                    return "1";
-                                }
-                                else {
-                                    console.log("fail");
-                                    return "0";
-                                }
-                            })
-                            .style("stroke", function(d2){
-                                if(d1[0].State=="National")
-                                    return "red";
-                                else
-                                    return "black";
-                            });
-                })
-                .on("mouseout", function(d1){
-                    focus.selectAll(".line")
-                            .style("stroke-opacity","1")
-                            .style("stroke-width",1.5)
-                    svgMap.selectAll("path")
-                            .style("fill-opacity", "1")
-                            .style("stroke","black")
-                })*/
 
         if(d3.select(".axis--x").empty()) {
             focus.append("g")
@@ -298,7 +265,6 @@
                 .call(xAxis2);
 
         if(d3.select(".brush").empty()){
-            console.log("hi");
             context.append("g")
                     .attr("class", "brush")
         }
@@ -325,17 +291,46 @@
         update();
     }
 
-    /*************************************************/
-    /*                 Map Section                   */
-    /*************************************************/
+    function addAll(){
+        dataArray=[];
+        context.selectAll(".line").remove();
+        focus.selectAll(".line").remove();
+        svgMap.selectAll("path")
+                .style("fill", "white");
+        for(var statename in dataAll){
+            dataArray.push(dataAll[statename]);
+        }
+        mapColors();
+        update();
+    }
 
+    function clearAll(){
+        dataArray=[];
+        context.selectAll(".line").remove();
+        focus.selectAll(".line").remove();
+        svgMap.selectAll("path")
+                .style("fill", "white")
+        update();
+    }
+
+    function getColor(state){
+        if (state=="Alabama"|| state=="Arizona"|| state=="Arkansas"|| state=="Alaska"|| state=="California"|| "Colorado" || state=="Connecticut"|| state=="Delaware" || state=="Florida" || state=="Georgia")
+            return color1(state);
+        else if (state=="Hawaii" || state=="Idaho" || state=="Illinois" || state=="Indiana" || state=="Iowa" || state=="New Jersey" || state=="Kansas" || state=="Kentucky" || state=="Louisiana" || state=="Maine" || state=="Maryland" || state=="Massachusetts" || state=="Michigan" || state=="Minnesota" || state=="Mississippi" || state=="Missouri" || state=="Montana" || state=="Nebraska" || state=="Nevada" || state=="New Hampshire")
+            return color2(state);
+        else
+            return color3(state);
+    }
 </script>
+
 <br>
 
-<script type="text/javascript">
-    //Width and height
 
-    var selColor;
+<script type="text/javascript">
+
+    /*************************************************/
+    /*                 Chart Section                 */
+    /*************************************************/
 
     var w = 1000;
     var h = 300;
@@ -365,56 +360,39 @@
                 .append("path")
                 .attr("d", statePath)
                 .style("stroke", "black")
-                .style("stroke-opacity", "1")
                 .style("fill", "white")
-
                 .on("click", function(d1){
                     svgMap.selectAll("path")
                             .style("fill", function(d2){
                                 if(d1==d2) {
                                     if((this).style.fill=="white") {
-                                        console.log(d1.properties.name + " click on");
-                                        //update chart here
-                                        if(+(d1.id) < 11) {
-                                            console.log(+(d1.id) + " c1");
-                                            selColor = color1(d1.properties.name);
                                             dataArray.push(dataAll[d1.properties.name]);
                                             update(d1.properties.name);
-                                            return selColor;
-                                        }
-                                        else if((+(d1.id) > 10) && (+(d1.id) < 41)) {
-                                            console.log(+(d1.id) + " c2");
-                                            selColor = color2(d1.properties.name);
-                                            dataArray.push(dataAll[d1.properties.name]);
-                                            update();
-                                            return selColor;
-                                        }
-                                        else {
-                                            console.log(+(d1.id) + " c3");
-                                            selColor = color3(d1.properties.name);
-                                            dataArray.push(dataAll[d1.properties.name]);
-                                            update();
-                                            return selColor;
-                                        }
+                                            return getColor(d1.properties.name);
                                     }
                                     else{
-                                        console.log(d1.properties.name + " click off");
-                                        dataArray.pop();
-
-                                        context.select(".line").remove();
-                                        focus.select(".line").remove();
-                                        //update chart here
-                                        return "white";
+                                        return getColor(d1.properties.name);
                                     }
                                 }
                                 else if ((this).style.fillOpacity==1.00)
                                     return 1;
                                 else
-                                    return 0;
+                                    return 1;
                             });
                 })
     });
+    function mapColors(){
+        svgMap.selectAll("path")
+                .style("stroke", "black")
+                .style("stroke-opacity", "1")
+                .style("fill", function(d){
+                    return getColor(d.properties.name);
+                });
+    }
 
 </script>
+
 <br>
-<button onclick="addNational()">Include national unemployment rate</button>
+<button onclick="addNational()">Include National Rate</button>
+<button onclick="addAll()">Include All 50 States</button>
+<button onclick="clearAll()">Clear All</button>
