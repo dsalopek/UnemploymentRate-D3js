@@ -156,45 +156,23 @@
                                     return 1.5;
                             });
                     svgMap.selectAll("path")
-                            .style("stroke", function(d2){
+                            .style("fill-opacity", function(d2){
                                 if(d1[0].State==d2.properties.name) {
                                     console.log("pass");
-                                    return "red";
+                                    return "1";
                                 }
                                 else {
                                     console.log("fail");
-                                    return "black";
-                                }
-                            })
-                            .style("stroke-width", function(d3){
-                                if(d1[0].State==d3.properties.name) {
-                                    console.log("pass");
-                                    return "4";
-                                }
-                                else {
-                                    console.log("fail");
-                                    return "1.5";
-                                }
-                            })
-                            .style("stroke-dasharray", function(d4){
-                                if(d1[0].State==d4.properties.name) {
-                                    console.log("pass");
                                     return "0";
                                 }
-                                else {
-                                    console.log("fail");
-                                    return "black";
-                                }
-                            });
+                            })
                 })
                 .on("mouseout", function(d1){
                     focus.selectAll(".line")
                             .style("stroke-opacity","1")
                             .style("stroke-width",1.5)
                     svgMap.selectAll("path")
-                            .style("stroke", "black")
-                            .style("stroke-width", 1.5)
-                            .style("stroke-dasharray", 4)
+                            .style("fill-opacity", "1")
                 })
 
         focus.selectAll(".line").data(dataArray).enter().append("path")
@@ -317,53 +295,46 @@
                 .append("path")
                 .attr("d", statePath)
                 .style("stroke", "black")
-                .style("stroke-dasharray", "4")
                 .style("stroke-opacity", "1")
-                .style("fill", function(d){
-                    if(+(d.id) < 11) {
-                        console.log(+(d.id) + " c1");
-                        return color1(d.properties.name);
-                    }
-                    else if((+(d.id) > 10) && (+(d.id) < 41)) {
-                        console.log(+(d.id) + " c2");
-                        return color2(d.properties.name);
-                    }
-                    else {
-                        console.log(+(d.id) + " c3");
-                        return color3(d.properties.name);
-                    }
-                })
+                .style("fill", "white")
+
                 .on("click", function(d1){
                     svgMap.selectAll("path")
-                            .style("fill-opacity", function(d2){
+                            .style("fill", function(d2){
                                 if(d1==d2) {
-                                    if((this).style.fillOpacity==1.00) {
+                                    if((this).style.fill=="white") {
+                                        console.log(d1.properties.name + " click on");
+                                        //update chart here
+                                        if(+(d1.id) < 11) {
+                                            console.log(+(d1.id) + " c1");
+                                            selColor = color1(d1.properties.name);
+                                            dataArray.push(dataAll[d1.properties.name]);
+                                            update(d1.properties.name);
+                                            return selColor;
+                                        }
+                                        else if((+(d1.id) > 10) && (+(d1.id) < 41)) {
+                                            console.log(+(d1.id) + " c2");
+                                            selColor = color2(d1.properties.name);
+                                            dataArray.push(dataAll[d1.properties.name]);
+                                            update(d1.properties.name);
+                                            return selColor;
+                                        }
+                                        else {
+                                            console.log(+(d1.id) + " c3");
+                                            selColor = color3(d1.properties.name);
+                                            dataArray.push(dataAll[d1.properties.name]);
+                                            update(d1.properties.name);
+                                            return selColor;
+                                        }
+                                    }
+                                    else{
                                         console.log(d1.properties.name + " click off");
                                         dataArray.pop();
 
                                         context.select(".line").remove();
                                         focus.select(".line").remove();
                                         //update chart here
-                                        return 0;
-                                    }
-                                    else{
-                                        console.log(d1.properties.name + " click on");
-                                        //update chart here
-                                        if(+(d1.id) < 11) {
-                                            console.log(+(d1.id) + " c1");
-                                            selColor = color1(d1.properties.name);
-                                        }
-                                        else if((+(d1.id) > 10) && (+(d1.id) < 41)) {
-                                            console.log(+(d1.id) + " c2");
-                                            selColor = color2(d1.properties.name);
-                                        }
-                                        else {
-                                            console.log(+(d1.id) + " c3");
-                                            selColor = color3(d1.properties.name);
-                                        }
-                                        dataArray.push(dataAll[d1.properties.name]);
-                                        update(d1.properties.name);
-                                        return 1;
+                                        return "white";
                                     }
                                 }
                                 else if ((this).style.fillOpacity==1.00)
@@ -375,3 +346,4 @@
     });
 
 </script>
+<p>National is included</p>
