@@ -44,7 +44,7 @@
             yAxis = d3.axisLeft(y);
 
     var brush = d3.brushX()
-            .extent([[0, 0], [width, height2]])
+            .extent([[0, 0], [width, height2-1]])
             .on("brush end", brushed);
 
     /*var zoom = d3.zoom()
@@ -262,66 +262,19 @@
 
         context.select(".brush")
                 .call(brush)
-                .call(brush.move, x.range());
+                .call(brush.move);
     }
 
     function brushed() {
-        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+        //if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
         var s = d3.event.selection || x2.range();
         x.domain(s.map(x2.invert, x2));
         focus.selectAll(".line").attr("d", function(d){ return valueLine(d); });
         focus.select(".axis--x").call(xAxis);
-        /*svgChart.select(".zoom").call(zoom.transform, d3.zoomIdentity
-                .scale(width / (s[1] - s[0]))
-                .translate(-s[0], 0));*/
-    }
-
-    function zoomed() {
-        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-        var t = d3.event.transform;
-        x.domain(t.rescaleX(x2).domain());
-        focus.selectAll(".line").attr("d", function(d){ return valueLine(d); });
-        focus.select(".axis--x").call(xAxis);
-        context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
-        brush.extent(brush.extent());
     }
 
     function update(){
-        //dataArray.push(dataAll[inState]);
-        //dataArray.push(dataAll["New Mexico"]);
-        //focus.selectAll(".line").remove();
-
-
-
-
-
         drawGraph();
-        /*      focus.selectAll(".line").data(dataArray).enter().append("path")
-         .attr("class", function (d) {
-         return "line"+d[0].State;
-         })
-         .attr("stroke", function(d){
-         console.log(color(d[0].State) + "hi");
-         return color(d[0].State);
-         })
-         .attr("d", function(d,i){
-         console.log("AAA "+i);
-         return valueLine(d);
-         })
-
-         focus.selectAll(".inState")
-         .attr("stroke", "#1f77b4");
-         /*focus.append("path")
-         .attr("class", "line")
-         .attr("d", function(d,i){
-         return valueLine(dataArray[i]);
-         })
-         /*focus.append("path")
-         .attr("class", "line")
-         .attr("d", function(d){
-         return valueLine(dataArray[1]);
-         });
-         */
     }
 
     /*************************************************/
@@ -386,7 +339,8 @@
                                 if(d1==d2) {
                                     if((this).style.fillOpacity==1.00) {
                                         console.log(d1.properties.name + " click off");
-                                        dataArray.pop(dataAll[d1.properties.name]);
+                                        dataArray.pop();
+
                                         context.select(".line").remove();
                                         focus.select(".line").remove();
                                         //update chart here
@@ -416,24 +370,8 @@
                                     return 1;
                                 else
                                     return 0;
-
                             });
                 })
-        /*.on("mouseover", function(d3){
-            svg.selectAll("path")
-                .style("stroke-width", function(d4){
-                    if(d3==d4) {
-                    console.log(d3.properties.name + " mouseover");
-                    return "5";
-                }
-            });
-         /*.style("stroke", function(d5){
-         if(d3==d5) {
-         return "white";
-         }
-         });
-         });*/
-
     });
 
 </script>
