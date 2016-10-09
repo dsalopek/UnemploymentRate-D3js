@@ -125,17 +125,88 @@
         context.selectAll(".line").data(dataArray).enter().append("path")
                 .attr("class", "line")
                 .attr("stroke", function(d){
-                    console.log(color1(d[0].State) + "hi");
+                    if(d[0].State=="National"){
+                        console.log(d[0].State + "test");
+                        return "black";
+                    }
                     return selColor;
                 })
                 .attr("d", function(d){
                     return valueLine2(d);
                 })
 
-        focus.append("path")
+        focus.selectAll(".line").data(dataArray).enter().append("path")
+                .attr("class", "line")
+                .attr("stroke", function(d){
+                    if(d[0].State=="National"){
+                        console.log(d[0].State + "test");
+                        return "black";
+                    }
+                    return selColor;
+                })
+                .attr("d", function(d){
+                    return valueLine(d);
+                })
+                .style("stroke-dasharray", function(d){
+                    if(d[0].State=="National"){
+                        return 5;
+                    }
+                })
+                .on("mouseover", function(d1){
+                    focus.selectAll(".line")
+                            .style("stroke-opacity", function(d2){
+                                if(d1==d2)
+                                    return 1;
+                                else
+                                    return 0.15;
+                            })
+                            .style("stroke-width", function(d3){
+                                if(d1==d3)
+                                    return 3;
+                                else
+                                    return 1.5;
+                            })
+                            .style("stroke-dasharray", function(d){
+                                if(d[0].State=="National"){
+                                    return 5;
+                                }
+                            })
+                    svgMap.selectAll("path")
+                            .style("fill-opacity", function(d2){
+                                if(d1[0].State==d2.properties.name) {
+                                    console.log("pass");
+                                    return "1";
+                                }
+                                else {
+                                    console.log("fail");
+                                    return "0";
+                                }
+                            })
+                            .style("stroke", function(d2){
+                                if(d1[0].State=="National")
+                                    return "red";
+                                else
+                                    return "black";
+                            });
+                })
+                .on("mouseout", function(d1){
+                    focus.selectAll(".line")
+                            .style("stroke-opacity","1")
+                            .style("stroke-width",1.5)
+                    svgMap.selectAll("path")
+                            .style("fill-opacity", "1")
+                            .style("stroke","black")
+                })
+
+        /*focus.append("path")
                 .data(dataArray)
                 .attr("class", "line")
-                .attr("stroke", function(d, i){
+                .attr("stroke", function(d){
+                    if(d.State=="National"){
+                        console.log(d.State + "test");
+                        return "black";
+                    }
+                    console.log(d.State + "test fail");
                     return selColor;
                 })
                 .attr("d", function(d){
@@ -166,6 +237,12 @@
                                     return "0";
                                 }
                             })
+                            .style("stroke", function(d2){
+                                if(d1[0].State=="National")
+                                    return "red";
+                                else
+                                    return "black";
+                            });
                 })
                 .on("mouseout", function(d1){
                     focus.selectAll(".line")
@@ -173,20 +250,8 @@
                             .style("stroke-width",1.5)
                     svgMap.selectAll("path")
                             .style("fill-opacity", "1")
-                })
-
-        focus.selectAll(".line").data(dataArray).enter().append("path")
-                .attr("class", function (d) {
-                    return "line"+d[0].State;
-                })
-                .attr("stroke", function(d){
-                    console.log(color1(d[0].State) + "hi");
-                    return selColor;
-                })
-                .attr("d", function(d,i){
-                    console.log("AAA "+i);
-                    return valueLine(d);
-                })
+                            .style("stroke","black")
+                })*/
 
         if(d3.select(".axis--x").empty()) {
             focus.append("g")
@@ -255,6 +320,11 @@
         drawGraph();
     }
 
+    function addNational(){
+        dataArray.push(dataAll["National"]);
+        update();
+    }
+
     /*************************************************/
     /*                 Map Section                   */
     /*************************************************/
@@ -316,14 +386,14 @@
                                             console.log(+(d1.id) + " c2");
                                             selColor = color2(d1.properties.name);
                                             dataArray.push(dataAll[d1.properties.name]);
-                                            update(d1.properties.name);
+                                            update();
                                             return selColor;
                                         }
                                         else {
                                             console.log(+(d1.id) + " c3");
                                             selColor = color3(d1.properties.name);
                                             dataArray.push(dataAll[d1.properties.name]);
-                                            update(d1.properties.name);
+                                            update();
                                             return selColor;
                                         }
                                     }
@@ -346,4 +416,5 @@
     });
 
 </script>
-<p>National is included</p>
+<br>
+<button onclick="addNational()">Hello</button>
