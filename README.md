@@ -2,7 +2,6 @@
 ## An Interactive Unemployment Rate Data Visualization Web Application 
 [![](https://img.youtube.com/vi/X1pHHATD8mw/0.jpg)](https://www.youtube.com/watch?v=X1pHHATD8mw)<br/>
 [Link to application page](https://dsalopek.github.io/UnemploymentRate-D3js/)<br/><br/>
-This is a web application written in D3js to visualize the unemployment rates for all 50 states. Data was obtained from the BLS website. Dates for data range from 1978 to 2016.<br/>
 #### Overview
 This is a web application written in D3js to visualize the unemployment rates for all 50 states. Data was obtained from the BLS website. Dates for data range from 1978 to 2016.
 The focus chart is the topmost element, with the appropriate title and axis labels. The middle element is the time interval selector, as well as a contextual representation of the entire data set.<br/>
