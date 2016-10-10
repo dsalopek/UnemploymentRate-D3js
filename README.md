@@ -1,7 +1,7 @@
 # Unemployment Rates
 ## An Interactive Unemployment Rate Data Visualization Web Application 
 [![](https://img.youtube.com/vi/X1pHHATD8mw/0.jpg)](https://www.youtube.com/watch?v=X1pHHATD8mw)<br/>
-[Link to application page](https://dsalopek.github.io/UnemploymentRate-D3js/)<br/><br/>
+[Link to application page](https://dsalopek.github.io/UnemploymentRate-D3js/)
 ### Overview
 This is a web application written in D3js to visualize the unemployment rates for all 50 states. Data was obtained from the BLS website. Dates for data range from 1978 to 2016.
 The focus chart is the topmost element, with the appropriate title and axis labels. The middle element is the time interval selector, as well as a contextual representation of the entire data set.<br/>
@@ -14,13 +14,14 @@ A massive jump to over 20% unemployment. This is the highest unemployment rate o
 ##### Louisiana Early 2005
 A sharp increase and decrease in early 2005 attributed directly to the natural disaster, Hurricane Katrina.<sup>2</sup>
 ##### National Rate 2010
-A national increase of unemployment, this is attributed to the recession that started in 2008.<sup>3</sup> Michigan had the highest unemployment rate in this time. Perhaps it was due to the bailout of the automakers in Detroit.<sup>4</sup>
-![Imgur](http://i.imgur.com/eBBsjge.png)
+A national increase of unemployment, this is attributed to the recession that started in 2008.<sup>3</sup> Michigan had the highest unemployment rate in this time. Perhaps it was due to the bailout of the automakers in Detroit.<sup>4</sup><br/>
+![Imgur](http://i.imgur.com/eBBsjge.png)<br/>
 
 ### Notes
 This application was adapted from various examples from the creator of D3.js, Mike Bostock. This application was written for a project in CS4331 at TTU, Data Visualization and Visual Analytics.<br/>
-*Note that this application does not run correctly on Safari browser.*<br/>
+*Note that this application does not run correctly on Safari browser.*
+##### References
 <sup>1</sup>Congressional Budget Office, "The Prospects for Economic Recovery", February 1982. "The downturn was precipitated by a rise in interest rates to levels that exceeded the record rates recorded a year earlier" (p. xi)
-<sup>2</sup>Bureau of Labor Statistics,. The Effect Of Hurricane Katrina On Employment And Unemployment. Bureau of Labor Statistics, 2006. Print.
-<sup>3</sup>Bureau of Labor Statistics,. Unemployment Remains High In 2010. Bureau of Labor Statistics, 2011. Print.
-<sup>4</sup>Gable, Mary and Douglas Hall. "Ongoing Joblessness In Michigan". Economic Policy Institute. N.p., 2013. Web. 4 Oct. 2016.
+<br/><sup>2</sup>Bureau of Labor Statistics,. The Effect Of Hurricane Katrina On Employment And Unemployment. Bureau of Labor Statistics, 2006. Print.
+<br/><sup>3</sup>Bureau of Labor Statistics,. Unemployment Remains High In 2010. Bureau of Labor Statistics, 2011. Print.
+<br/><sup>4</sup>Gable, Mary and Douglas Hall. "Ongoing Joblessness In Michigan". Economic Policy Institute. N.p., 2013. Web. 4 Oct. 2016.
